@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>igarchive viewer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+  <nav class="rail" aria-label="Sections">
+    <span class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.8" cy="6.2" r="1.4" fill="currentColor"/></svg>
+    </span>
+    <button data-nav="posts" aria-label="Posts">
+      <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3zM3 9.5h18M3 14.5h18M9.5 3v18M14.5 3v18" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    </button>
+    <button data-nav="reels" aria-label="Reels">
+      <svg viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 8h18M8.5 3l3 5M14 3l3 5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.2 11.5l5.2 3.1-5.2 3.1z" fill="currentColor"/></svg>
+    </button>
+  </nav>
+  <main id="app" aria-busy="true">Loading archive…</main>
+</div>
+
+<div id="modal" class="overlay" hidden role="dialog" aria-modal="true" aria-label="Post">
+  <button class="close" aria-label="Close">✕</button>
+  <div class="modal-box">
+    <div class="media-pane">
+      <button class="nav prev" aria-label="Previous media" hidden>‹</button>
+      <div class="media-slot"></div>
+      <button class="nav next" aria-label="Next media" hidden>›</button>
+      <div class="dots"></div>
+    </div>
+    <aside class="meta-pane"></aside>
+  </div>
+</div>
+
+<div id="story" class="overlay story" hidden role="dialog" aria-modal="true" aria-label="Highlight">
+  <button class="close" aria-label="Close">✕</button>
+  <button class="nav prev" aria-label="Previous" >‹</button>
+  <div class="story-frame">
+    <div class="story-progress"></div>
+    <div class="story-head"></div>
+    <button class="story-pause" aria-label="Pause story">❚❚</button>
+    <div class="story-slot"></div>
+  </div>
+  <button class="nav next" aria-label="Next">›</button>
+</div>
+
+<script>
+window.onerror = (msg, src, line, col) => {
+  const app = document.getElementById("app");
+  if (app) app.textContent = `Viewer error: ${msg} (${(src || "").split("/").pop()}:${line}:${col})`;
+};
+</script>
+<script src="app.js"></script>
+</body>
+</html>

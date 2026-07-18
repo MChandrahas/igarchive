@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>igarchive</title>
+<style>
+  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+  body { max-width: 640px; margin: 3rem auto; padding: 0 1rem; line-height: 1.5; }
+  h1 { font-size: 1.4rem; }
+  fieldset { border: 1px solid #8884; border-radius: 8px; margin-bottom: 1rem; padding: 1rem; }
+  legend { font-weight: 600; padding: 0 .4rem; }
+  input[type=text] { width: 100%; box-sizing: border-box; padding: .5rem; font-size: 1rem;
+    border: 1px solid #8886; border-radius: 6px; background: transparent; color: inherit; }
+  button { padding: .5rem 1rem; font-size: 1rem; border-radius: 6px; border: 1px solid #8886;
+    background: #3897f0; color: #fff; cursor: pointer; margin-top: .5rem; }
+  button.secondary { background: transparent; color: inherit; }
+  button:disabled { opacity: .5; cursor: default; }
+  .warn { background: #f0ad1420; border: 1px solid #f0ad1460; border-radius: 6px;
+    padding: .6rem .8rem; font-size: .9rem; }
+  .err { color: #d43; white-space: pre-line; }
+  .ok { color: #2a8; }
+  progress { width: 100%; height: 1rem; }
+  ul { padding-left: 1.2rem; }
+  label { display: block; margin: .3rem 0; }
+  #pause { color: #f0ad14; }
+</style>
+</head>
+<body>
+<h1>igarchive</h1>
+<p class="warn"><strong>Use a burner account.</strong> Scraping gets accounts banned —
+that is the expected end-state of the account this session comes from. Never import a
+session from your main account.</p>
+
+<fieldset>
+  <legend>1 · Session</legend>
+  <div id="session-state">Checking…</div>
+  <button id="import-ff" class="secondary">Import from Firefox</button>
+  <details style="margin-top:.5rem">
+    <summary>…or paste cookies (any browser)</summary>
+    <p><small>Paste the <strong>whole cookie string</strong> from DevTools (Network tab →
+    any instagram.com request → Request Headers → <code>Cookie</code>). A bare
+    <code>sessionid</code> also works but gets blocked (403) more often.</small></p>
+    <input type="text" id="sessionid" placeholder="csrftoken=…; ds_user_id=…; sessionid=…" autocomplete="off">
+    <button id="import-paste" class="secondary">Import pasted cookies</button>
+  </details>
+  <div id="session-err" class="err"></div>
+</fieldset>
+
+<fieldset>
+  <legend>2 · Download</legend>
+  <input type="text" id="username" placeholder="public profile username">
+  <label><input type="checkbox" id="highlights" checked> Highlights</label>
+  <label><input type="checkbox" id="comments"> Comments <small>(much slower — one throttled
+    request per post)</small></label>
+  <button id="start">Download profile</button>
+  <button id="cancel" class="secondary" hidden>Stop (resumable)</button>
+  <div id="job"></div>
+</fieldset>
+
+<fieldset>
+  <legend>Archives</legend>
+  <ul id="archives"><li><em>None yet</em></li></ul>
+  <p><small>Safe to share a profile folder (e.g. <code>archives/sii_shore</code>) — it's
+  media + data only, viewer works offline. <strong>Don't share the whole
+  <code>archives</code> folder</strong>: it contains your login
+  (<code>.session.json</code>).</small></p>
+</fieldset>
+
+<fieldset>
+  <legend>Quit</legend>
+  <p><small>This runs a small local server. Closing the browser leaves it running —
+  use Quit to stop it completely.</small></p>
+  <button id="quit" class="secondary">Quit igarchive</button>
+  <div id="quit-msg"></div>
+</fieldset>
+
+<script>
+const $ = id => document.getElementById(id);
+const api = (path, body) => fetch(path, body ? {
+  method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)
+} : {}).then(async r => {
+  if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+  return r.json();
+});
+
+async function refreshSession() {
+  try {
+    const s = await api("/api/session");
+    $("session-state").innerHTML = s.active
+      ? `<span class="ok">Session active as <strong>@${s.username}</strong></span>`
+      : "No session — import one below.";
+  } catch { $("session-state").textContent = "Could not reach the app."; }
+}
+
+async function doImport(sessionid) {
+  $("session-err").textContent = "";
+  const btns = [$("import-ff"), $("import-paste")];
+  btns.forEach(b => b.disabled = true);
+  $("session-state").textContent = "Importing — validating with Instagram…";
+  try {
+    const s = await api("/api/session/import", { sessionid });
+    $("session-state").innerHTML =
+      `<span class="ok">✓ Fresh session imported just now as <strong>@${s.username}</strong></span>`;
+  } catch (e) {
+    $("session-err").textContent = e.message;
+    await refreshSession();
+  } finally { btns.forEach(b => b.disabled = false); }
+}
+$("import-ff").onclick = () => doImport(null);
+$("import-paste").onclick = () => doImport($("sessionid").value || null);
+
+$("start").onclick = async () => {
+  const username = $("username").value.trim();
+  if (!username) return;
+  try {
+    await api("/api/download", {
+      username, comments: $("comments").checked, highlights: $("highlights").checked
+    });
+  } catch (e) { $("job").innerHTML = `<div class="err">${e.message}</div>`; }
+};
+$("cancel").onclick = () => api("/api/cancel");
+
+$("quit").onclick = async () => {
+  try {
+    await api("/api/quit");
+    document.body.innerHTML =
+      "<h1>igarchive stopped</h1><p>You can close this tab. Double-click igarchive to start again.</p>";
+  } catch (e) { $("quit-msg").innerHTML = `<div class="err">${e.message}</div>`; }
+};
+
+async function poll() {
+  try {
+    const s = await api("/api/status");
+    $("archives").innerHTML = s.archives.length
+      ? s.archives.map(a => `<li><a href="/view/${a}/">${a}</a></li>`).join("")
+      : "<li><em>None yet</em></li>";
+    const j = s.job;
+    const running = j && (j.state === "FETCHING" || j.state === "ENUMERATING");
+    $("cancel").hidden = !running;
+    $("start").disabled = !!running;
+    if (j) {
+      const pct = j.total ? Math.round(100 * j.done / j.total) : 0;
+      $("job").innerHTML = `
+        <div>@${j.username} — <strong>${j.state}</strong>
+          ${j.total ? ` · ${j.done}/${j.total} posts (${pct}%)` : ""}</div>
+        ${j.total ? `<progress max="${j.total}" value="${j.done}"></progress>` : ""}
+        <div id="pause">${j.message || ""}</div>`;
+    }
+  } catch { /* server briefly busy; try again next tick */ }
+  setTimeout(poll, 1500);
+}
+refreshSession();
+poll();
+</script>
+</body>
+</html>

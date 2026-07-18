@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "captured_at": "2026-07-12T14:22:03Z",
+  "source_url": "https://instagram.com/mara.fjord",
+  "capture_options": { "authenticated": true, "comments": true, "highlights": true },
+  "capture_stats": {
+    "posts_captured": 4,
+    "highlights_captured": 1,
+    "comments_captured": 2,
+    "audio_files_missing": 1,
+    "incomplete": false
+  },
+  "profile": {
+    "username": "mara.fjord",
+    "full_name": "Mara Fjordheim",
+    "biography": "Landscape & film photographer\nBased in Norway 🇳🇴",
+    "external_url": "https://maravisuals.example",
+    "followers": 38400,
+    "following": 612,
+    "posts_count": 4,
+    "is_verified": true,
+    "is_private": false,
+    "avatar": { "local_path": "media/avatar.jpg", "remote_url": "https://scontent.example/avatar.jpg" }
+  },
+  "highlights": [
+    {
+      "id": "17901234567890123",
+      "title": "Iceland '25",
+      "cover": { "local_path": "media/hl/17901234567890123/cover.jpg", "remote_url": null },
+      "items": [
+        {
+          "kind": "image",
+          "local_path": "media/hl/17901234567890123/001.jpg",
+          "taken_at": "2025-11-02T09:14:00Z",
+          "width": 1080, "height": 1920,
+          "duration": null,
+          "audio_local_path": null
+        },
+        {
+          "kind": "video",
+          "local_path": "media/hl/17901234567890123/002.mp4",
+          "taken_at": "2025-11-02T10:00:00Z",
+          "width": 1080, "height": 1920,
+          "duration": 12.4,
+          "audio_local_path": null
+        }
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "shortcode": "REEL1234567",
+      "type": "reel",
+      "taken_at": "2026-07-08T07:14:00Z",
+      "caption": "Blue hour over Vestrahorn 🌊\nShot on the a7iv",
+      "likes": 4218,
+      "views": 91200,
+      "location": null,
+      "source_url": "https://instagram.com/p/REEL1234567",
+      "media": [
+        {
+          "kind": "video",
+          "local_path": "media/REEL1234567/001.mp4",
+          "remote_url": "https://scontent.example/reel.mp4",
+          "width": 1080, "height": 1920,
+          "duration": 21.7,
+          "audio_local_path": "media/REEL1234567/001.m4a",
+          "thumbnail_local_path": "media/REEL1234567/001_cover.jpg"
+        }
+      ],
+      "music": {
+        "title": "Holocene",
+        "artist": "Bon Iver",
+        "audio_id": "aud_88213",
+        "audio_local_path": "media/REEL1234567/001.m4a"
+      },
+      "comments_captured": true,
+      "comments": [
+        {
+          "username": "nord.light",
+          "text": "This is unreal 😍 what lens?",
+          "created_at": "2026-07-08T08:02:00Z",
+          "likes": 42,
+          "replies": [
+            {
+              "username": "mara.fjord",
+              "text": "24mm, 4s exposure",
+              "created_at": "2026-07-08T09:10:00Z",
+              "likes": 11,
+              "replies": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "shortcode": "PHOTOMUSIC1",
+      "type": "image",
+      "taken_at": "2026-06-30T18:00:00Z",
+      "caption": "Song attached, but Instagram exposed no audio URL for it.",
+      "likes": 812,
+      "views": null,
+      "location": null,
+      "source_url": "https://instagram.com/p/PHOTOMUSIC1",
+      "media": [
+        {
+          "kind": "image",
+          "local_path": "media/PHOTOMUSIC1/001.jpg",
+          "remote_url": "https://scontent.example/p1.jpg",
+          "width": 1080, "height": 1350,
+          "duration": null,
+          "audio_local_path": null
+        }
+      ],
+      "music": {
+        "title": "Flightless Bird",
+        "artist": "Iron & Wine",
+        "audio_id": "aud_11111",
+        "audio_local_path": null,
+        "snippet_start_ms": 164346,
+        "snippet_duration_ms": 50000
+      },
+      "comments_captured": true,
+      "comments": []
+    },
+    {
+      "shortcode": "CAROUSEL111",
+      "type": "carousel",
+      "taken_at": "2026-06-20T12:30:00Z",
+      "caption": null,
+      "likes": 1500,
+      "views": null,
+      "location": null,
+      "source_url": "https://instagram.com/p/CAROUSEL111",
+      "media": [
+        {
+          "kind": "image",
+          "local_path": "media/CAROUSEL111/001.jpg",
+          "remote_url": null,
+          "width": 1080, "height": 1080,
+          "duration": null,
+          "audio_local_path": null
+        },
+        {
+          "kind": "video",
+          "local_path": "media/CAROUSEL111/002.mp4",
+          "remote_url": null,
+          "width": 1080, "height": 1080,
+          "duration": 8.0,
+          "audio_local_path": "media/CAROUSEL111/002.m4a"
+        }
+      ],
+      "music": null,
+      "comments_captured": false,
+      "comments": []
+    },
+    {
+      "shortcode": "SINGLEIMG01",
+      "type": "image",
+      "taken_at": "2026-06-01T08:00:00Z",
+      "caption": "טקסט מימין לשמאל and emoji 🏔️",
+      "likes": 300,
+      "views": null,
+      "location": null,
+      "source_url": "https://instagram.com/p/SINGLEIMG01",
+      "media": [
+        {
+          "kind": "image",
+          "local_path": "media/SINGLEIMG01/001.jpg",
+          "remote_url": null,
+          "width": 1080, "height": 1350,
+          "duration": null,
+          "audio_local_path": null
+        }
+      ],
+      "music": null,
+      "comments_captured": true,
+      "comments": []
+    }
+  ]
+}

@@ -5,6 +5,9 @@ description = "Local Instagram profile archiver with an offline viewer"
 requires-python = ">=3.11"
 license = "MIT"
 dependencies = [
+    # NOTE: plain PyPI instaloader currently 403s on Instagram's graphql API. This
+    # project runs a patched build — after `pip install -e`, reinstall it from the PR:
+    # see README "Future-proofing" (the refs/pull/.../head command). KE-025.
     "instaloader>=4.13",
     "fastapi>=0.110",
     "uvicorn>=0.29",

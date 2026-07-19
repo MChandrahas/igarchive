@@ -321,3 +321,10 @@ hard contract is what makes archives outlive the tool.
 **Hard rules** (violating any is a bug, not a preference): local-only (`127.0.0.1`); never
 handle a password; never re-encode media (ffmpeg `-c copy` only); always rate-limit and
 stay resumable; the viewer never touches the network.
+
+---
+
+## License
+
+[MIT](LICENSE) — free to use, modify, and distribute. For **personal, local archiving**;
+do not use it to redistribute or re-host downloaded content.

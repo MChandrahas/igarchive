@@ -3,6 +3,7 @@ name = "igarchive"
 version = "0.1.0"
 description = "Local Instagram profile archiver with an offline viewer"
 requires-python = ">=3.11"
+license = "MIT"
 dependencies = [
     "instaloader>=4.13",
     "fastapi>=0.110",

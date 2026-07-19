@@ -16,6 +16,16 @@ the app long gone.
 
 ---
 
+## Download
+
+Grab the latest **`igarchive.exe`** (Windows, single file — ffmpeg and the viewer are
+bundled) from the [**Releases page**](https://github.com/MChandrahas/igarchive/releases/latest).
+Nothing to install; see [Quick start](#quick-start-the-packaged-app) below.
+
+To run from source instead (any OS), see [Developer setup](#developer-setup-running-from-source).
+
+---
+
 ## Table of contents
 
 - [Quick start (the packaged app)](#quick-start-the-packaged-app)
@@ -32,6 +42,8 @@ the app long gone.
 ---
 
 ## Quick start (the packaged app)
+
+*(Windows. For macOS/Linux, [run from source](#developer-setup-running-from-source).)*
 
 1. **Double-click `igarchive.exe`.** A local server starts and your browser opens to the
    control page automatically. No terminal, no Python, no ffmpeg install required — it's

@@ -19,6 +19,7 @@ from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel
 
+from .backfill import backfill
 from .fetcher import FetchJob
 from .session import SessionError, import_session, load_saved
 
@@ -88,15 +89,45 @@ def start_download(req: DownloadRequest) -> dict[str, str]:
         raise HTTPException(status_code=400, detail="Import a session first.")
     if _job is not None and _job.status["state"] in ("ENUMERATING", "FETCHING"):
         raise HTTPException(status_code=409, detail="A download is already running.")
+    username = req.username.strip().lstrip("@")
+    root = archives_root()
     _job = FetchJob(
         _loader,
-        req.username.strip().lstrip("@"),
-        archives_root(),
+        username,
+        root,
         with_comments=req.comments,
         with_highlights=req.highlights,
     )
-    threading.Thread(target=_job.run, daemon=True).start()
+    threading.Thread(
+        target=_run_with_backfill, args=(_job, _loader, root, username), daemon=True
+    ).start()
     return {"state": "started"}
+
+
+def _run_with_backfill(
+    job: FetchJob, loader: instaloader.Instaloader, root: Path, username: str
+) -> None:
+    """Crawl, then re-probe music for the posts it added (KE-025). Music no longer
+    comes back during enumeration, so a successful crawl chains straight into the
+    backfill rather than leaving the user to run it by hand. The crawl is the record;
+    if audio recovery fails, the archive is still complete."""
+    job.run()
+    if job.status["state"] != "COMPLETE":
+        return
+    # Reuse the FETCHING state as a busy guard so a second download can't start
+    # mid-backfill; the message says what's actually happening.
+    job.status["state"] = "FETCHING"
+    job.status["message"] = "Recovering audio…"
+    try:
+        backfill(username, root, loader=loader)
+        job.status["message"] = "Done"
+    except Exception as e:  # noqa: BLE001 — audio recovery is best-effort; the crawl stands
+        job.status["message"] = (
+            f"Archive complete — audio recovery skipped ({type(e).__name__}); "
+            "run scripts/backfill_music.py to retry."
+        )
+    finally:
+        job.status["state"] = "COMPLETE"
 
 
 @app.post("/api/cancel")

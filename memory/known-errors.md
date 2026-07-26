@@ -84,6 +84,16 @@ probe. `music.extract_from_post` and `dimensions_from_post` now fall back to it.
 captured while extraction was broken can be repaired in place with
 `scripts/backfill_music.py <username>` (metadata + audio files, no media re-downloads).
 
+**Update (auto-chain):** because a normal crawl no longer captures music at all, the
+backfill logic now lives in the package (`igarchive.backfill.backfill`) and the launcher
+runs it automatically after every completed download (`_run_with_backfill` in
+`launcher.py`) — the crawl chains straight into music recovery instead of leaving it to a
+manual step. `scripts/backfill_music.py` is now a thin CLI shim over the same function,
+kept for on-demand re-runs (e.g. retrying after a 403 interrupts the auto pass). The pass
+re-probes every music-less post each run, including genuinely-no-music ones — an accepted
+cost, bounded by the per-session request ceiling. Deliberately NOT inlined into the crawl
+loop: doing so would spend an extra request on every no-music post mid-crawl.
+
 ### 🔴 KE-026 — "Guaranteed" Instaloader fields aren't; a field crash killed the job thread silently (observed 2026-07-17)
 Under the PR-2706 response conversion, `post.video_duration` raised `KeyError` (the converted
 shape drops fields that used to always exist). Worse: the job thread had no catch-all, so it

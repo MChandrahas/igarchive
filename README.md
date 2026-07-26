@@ -93,6 +93,13 @@ creator's cover image), captions, likes, view counts, timestamps, highlights, so
 title/artist, and — where obtainable — the audio file and the creator's snippet timing.
 Comments only when you tick the box.
 
+> **Music is recovered in a second, automatic pass.** Instagram no longer includes song
+> info in the profile listing it returns during a crawl, so when the download finishes the
+> app automatically re-probes each music-bearing post and pulls the track — you'll briefly
+> see *"Recovering audio…"* after the post bar reaches 100%. No action needed; it's the
+> same [`backfill_music`](#maintenance-scripts-music-covers) step, run for you. If that pass
+> is interrupted (e.g. a 403), the archive is still complete and you can re-run it by hand.
+
 ### 4. Resumability (important)
 
 Every run is **resumable**. The tool deliberately stops itself after **800 requests** in
@@ -181,9 +188,12 @@ post.
 .venv/Scripts/python.exe scripts/backfill_covers.py <username>
 ```
 
-When to use them: after downloading with an older build, or if songs/covers are missing.
-Future downloads capture music, snippets, and covers automatically — these are only for
-catching up existing archives. They need a valid session (import one in the app first).
+When to use them: the app **runs `backfill_music` automatically after every completed
+download** (see [What gets captured](#3-what-gets-captured)), so you normally never call it
+by hand — do so only to retry after that auto pass was interrupted (e.g. a 403), or to
+catch up an archive downloaded with an older build. `backfill_covers` is manual-only: reel
+covers *are* captured during a normal download, so run it just to fill gaps in older
+archives. Both need a valid session (import one in the app first).
 
 ---
 
@@ -234,7 +244,7 @@ changes shape, it fails first, on purpose.
 .venv\Scripts\python build.py
 ```
 
-Produces `dist/igarchive.exe` (~108 MB, single file, ffmpeg + viewer bundled). Copy it
+Produces `dist/igarchive.exe` (~112 MB, single file, ffmpeg + viewer bundled). Copy it
 next to an `archives/` folder to run.
 
 > The exe **freezes in whatever Instaloader is installed** — including the PR patch. When
@@ -253,7 +263,7 @@ next to an `archives/` folder to run.
 | **Download bar stuck at 100%** | Not stuck — it's downloading highlights (the bar only tracks posts). Large highlights take minutes at the safe request rate. |
 | **Run crashed mid-way** | Completed posts are safe. The UI shows FAILED with the reason; just download the same profile again to resume. |
 | **Reel shows a black/blank tile** | Its cover wasn't captured (e.g. a since-deleted post). Run `backfill_covers.py`, or it falls back to the video's first frame in a real browser. |
-| **Song/cover missing on some posts** | Original-audio reels and older metadata shapes may lack timing; deleted posts can't be re-fetched. Run the backfill scripts for the rest. |
+| **Song/cover missing on some posts** | Downloads auto-run the music recovery pass; if it was interrupted (403/ban) some posts stay music-less. Re-run `backfill_music.py` once the account is usable again. Original-audio reels/older shapes may lack timing, and deleted posts can't be re-fetched. |
 | **App still in Task Manager after closing** | You closed the browser, not the app. Use the **Quit igarchive** button on the control page. |
 | **SmartScreen blocks the exe** | Expected for an unsigned self-built exe: *More info → Run anyway.* |
 | **`python` not found / opens Microsoft Store** | The Store alias. Use `.venv\Scripts\python.exe`, or disable the alias in Settings → Apps → Advanced app settings → App execution aliases. |
